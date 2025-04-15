@@ -7,29 +7,30 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@Table(name = "MEMBERS") // 테이블 이름 변경
 public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "USER_NUM_PK")
+    @Column(name = "MEMBER_NUM_PK")
     private Long id;
 
-    @Column(name = "USER_ID")
+    @Column(name = "MEMBER_ID")
     private String username;
 
-    @Column(name = "USER_NM")
+    @Column(name = "MEMBER_NM")
     private String name;
 
-    @Column(name = "USER_GENDER")
+    @Column(name = "MEMBER_GENDER")
     private String gender;
 
-    @Column(name = "USER_EMAIL")
+    @Column(name = "MEMBER_EMAIL")
     private String email;
 
-    @Column(name = "USER_COUNTRY")
+    @Column(name = "MEMBER_COUNTRY")
     private String country;
 
-    @Column(name = "USER_ROLE")
+    @Column(name = "MEMBER_ROLE")
     private String role;
 
     @Column(name = "SOCIAL_TYPE")
