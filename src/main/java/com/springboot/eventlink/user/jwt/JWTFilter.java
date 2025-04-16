@@ -28,10 +28,24 @@ public class JWTFilter extends OncePerRequestFilter {
         // 쿠키에서 Authorization 토큰 가져오기
         String authorization = null;
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("Authorization")) {
-                authorization = cookie.getValue();
+//        for (Cookie cookie : cookies) {
+//            if (cookie.getName().equals("Authorization")) {
+//                authorization = cookie.getValue();
+//            }
+//        }
+        //  null 체크 꼭 필요!
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("Authorization")) {
+                    authorization = cookie.getValue();
+                }
             }
+        }
+
+        //  WebSocket 요청 등에서 인증 없어도 통과
+        if (authorization == null) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
         // Authorization 헤더가 없으면 그냥 필터 체인 진행
