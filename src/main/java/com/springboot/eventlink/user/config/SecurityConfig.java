@@ -108,7 +108,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                                .requestMatchers("/oauth2/**", "/logout").permitAll() // OAuth2 인증 경로는 모두 허용
+                                .requestMatchers("/oauth2/**", "/logout","/ws/chat").permitAll() // OAuth2 인증 경로는 모두 허용
                                 .anyRequest().authenticated()); // 그 외에는 인증 필요
                        // .requestMatchers("/").permitAll()
                        // .requestMatchers("my").hasRole("USER")
