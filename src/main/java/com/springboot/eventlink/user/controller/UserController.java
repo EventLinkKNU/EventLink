@@ -33,6 +33,8 @@ public class UserController {
 
     @GetMapping("/api/user/profile")
     public ResponseEntity<UserDTO> getUser(@AuthenticationPrincipal CustomOAuth2User principal) {
+        System.out.println("---------"+principal.getUsername() + "--------------");
+        System.out.println("---------"+principal.getName() + "--------------");
         UserDTO user = userService.getUserInfo(principal.getUsername());
         return ResponseEntity.ok(user);
     }
@@ -41,7 +43,6 @@ public class UserController {
     public ResponseEntity<?> updateUser(
             @AuthenticationPrincipal CustomOAuth2User principal,
             @RequestBody UserUpdateRequest request) {
-
         userService.updateUser(principal.getUsername(), request);
         return ResponseEntity.ok("수정 완료");
     }
