@@ -35,19 +35,19 @@ public class EventController {
         }
 
     }
-    @GetMapping("/getMyEvents")
+    @GetMapping("/get-my-events")
     public ResponseEntity<List<EventResponseDto>> getMyEventList(@AuthenticationPrincipal CustomOAuth2User user){
         String userName = user.getUsername();
         List<EventResponseDto> events = eventService.getUserEvents(userName);
         return ResponseEntity.ok(events);
     }
-    @GetMapping("/getAllEvents")
+    @GetMapping("/get-all-events")
     public ResponseEntity<List<EventResponseDto>> getALlEventList(@AuthenticationPrincipal CustomOAuth2User user){
         List<EventResponseDto> events = eventService.getAllEvents();
         return ResponseEntity.ok(events);
     }
-    @DeleteMapping("/deleteEvent")
-    public ResponseEntity<String> deleteEvent(@PathVariable Long eventId, @AuthenticationPrincipal CustomOAuth2User user){
+    @DeleteMapping("/delete-event")
+    public ResponseEntity<String> deleteEvent(@RequestParam Long eventId, @AuthenticationPrincipal CustomOAuth2User user){
         String userName = user.getUsername();
         eventService.deleteEvent(eventId, userName);
         return ResponseEntity.ok("이벤트 삭제 완");
