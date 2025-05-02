@@ -1,10 +1,11 @@
 package com.springboot.eventlink.event.service;
 
 import com.springboot.eventlink.event.dto.EventCreateDto;
+import com.springboot.eventlink.event.dto.EventParticipationDto;
 import com.springboot.eventlink.event.dto.EventResponseDto;
-import com.springboot.eventlink.event.entity.Category;
-import com.springboot.eventlink.event.entity.Event;
+import com.springboot.eventlink.event.entity.*;
 import com.springboot.eventlink.event.repository.CategoryRepository;
+import com.springboot.eventlink.event.repository.EventApplicationRepository;
 import com.springboot.eventlink.event.repository.EventParticipationRepository;
 import com.springboot.eventlink.event.repository.EventRepository;
 import com.springboot.eventlink.user.entity.Users;
@@ -12,6 +13,7 @@ import com.springboot.eventlink.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,12 +23,14 @@ public class EventService {
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
     private final EventParticipationRepository eventParticipationRepository;
+    private final EventApplicationRepository eventApplicationRepository;
 
-    public EventService(UserRepository userRepository, EventRepository eventRepository, CategoryRepository categoryRepository, EventParticipationRepository eventParticipationRepository) {
+    public EventService(UserRepository userRepository, EventRepository eventRepository, CategoryRepository categoryRepository, EventParticipationRepository eventParticipationRepository, EventApplicationRepository eventApplicationRepository) {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
         this.eventParticipationRepository = eventParticipationRepository;
+        this.eventApplicationRepository = eventApplicationRepository;
     }
     /*이벤트 관련 서비스*/
     @Transactional
@@ -96,6 +100,34 @@ public class EventService {
     }
 
     /*이벤트 신청서 서비스*/
+    @Transactional
+    public Long applyToEvent(String userName, EventParticipationDto dto) {
+        Users user = userRepository.findByUsername(userName);
+        Event event = eventRepository.findById(dto.getEventId())
+                .orElseThrow(() -> new IllegalArgumentException("이벤트를 찾을 수 없습니다."));
+
+        // 이미 신청한 경우 예외 처리
+        if (eventApplicationRepository.existsByEventAndMember(event, user)) {
+            throw new IllegalStateException("이미 이 이벤트에 신청한 사용자입니다.");
+        }
+
+        // 참여 정보 저장
+        EventParticipation participation = new EventParticipation();
+        participation.setEvent(event);
+        participation.setMember(user);
+        participation.setContent(dto.getContent());
+        eventParticipationRepository.save(participation);
+
+        // 신청 처리 정보 저장
+        EventApplication application = new EventApplication();
+        application.setEvent(event);
+        application.setMember(user);
+        application.setStatus(ApplicationStatus.PENDING);
+        application.setApplicationDate(LocalDateTime.now());
+        eventApplicationRepository.save(application);
+
+        return participation.getId();
+    }
 
 
     /*이벤트 신청 처리 서비스*/

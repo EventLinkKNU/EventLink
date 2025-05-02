@@ -1,6 +1,7 @@
 package com.springboot.eventlink.event.controller;
 
 import com.springboot.eventlink.event.dto.EventCreateDto;
+import com.springboot.eventlink.event.dto.EventParticipationDto;
 import com.springboot.eventlink.event.dto.EventResponseDto;
 import com.springboot.eventlink.event.service.EventService;
 import com.springboot.eventlink.user.dto.CustomOAuth2User;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,5 +53,11 @@ public class EventController {
         String userName = user.getUsername();
         eventService.deleteEvent(eventId, userName);
         return ResponseEntity.ok("이벤트 삭제 완");
+    }
+    @PostMapping("/events/apply")
+    public ResponseEntity<Long> applyToEvent(@RequestBody EventParticipationDto dto,
+                                             @AuthenticationPrincipal CustomOAuth2User userDetails) {
+        Long participationId = eventService.applyToEvent(userDetails.getUsername(), dto);
+        return ResponseEntity.ok(participationId);
     }
 }
