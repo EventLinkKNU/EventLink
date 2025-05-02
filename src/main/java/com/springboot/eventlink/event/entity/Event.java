@@ -35,6 +35,9 @@ public class Event {
     @Column(name = "MAX_PARTICIPANTS")
     private Integer maxParticipants;
 
+    @Column(name = "CURRENT_PARTICIPANTS")
+    private Integer currentParticipants;
+
     @Column(name = "EVENT_START_DATE")
     private LocalDateTime startDate;
 
