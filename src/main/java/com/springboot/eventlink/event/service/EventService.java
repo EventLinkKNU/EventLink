@@ -5,6 +5,7 @@ import com.springboot.eventlink.event.dto.EventResponseDto;
 import com.springboot.eventlink.event.entity.Category;
 import com.springboot.eventlink.event.entity.Event;
 import com.springboot.eventlink.event.repository.CategoryRepository;
+import com.springboot.eventlink.event.repository.EventParticipationRepository;
 import com.springboot.eventlink.event.repository.EventRepository;
 import com.springboot.eventlink.user.entity.Users;
 import com.springboot.eventlink.user.repository.UserRepository;
@@ -19,12 +20,15 @@ public class EventService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
+    private final EventParticipationRepository eventParticipationRepository;
 
-    public EventService(UserRepository userRepository, EventRepository eventRepository, CategoryRepository categoryRepository) {
+    public EventService(UserRepository userRepository, EventRepository eventRepository, CategoryRepository categoryRepository, EventParticipationRepository eventParticipationRepository) {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
+        this.eventParticipationRepository = eventParticipationRepository;
     }
+    /*이벤트 관련 서비스*/
     @Transactional
     public Long createEvent(String userName, EventCreateDto dto){
         Users creator = userRepository.findByUsername(userName);
@@ -36,6 +40,7 @@ public class EventService {
         event.setTitle(dto.getTitle());
         event.setContent(dto.getContent());
         event.setMinParticipants(dto.getMinParticipants());
+        event.setCurrentParticipants(1);
         event.setMaxParticipants(dto.getMaxParticipants());
         event.setStartDate(dto.getStartDate());
         event.setCloseDate(dto.getCloseDate());
@@ -73,8 +78,6 @@ public class EventService {
         }
         eventRepository.delete(event);
     }
-
-
     private EventResponseDto toDto(Event event) {
         return EventResponseDto.builder()
                 .id(event.getId())
@@ -91,5 +94,10 @@ public class EventService {
                 .categoryName(event.getCategory().getName())
                 .build();
     }
+
+    /*이벤트 신청서 서비스*/
+
+
+    /*이벤트 신청 처리 서비스*/
 
 }

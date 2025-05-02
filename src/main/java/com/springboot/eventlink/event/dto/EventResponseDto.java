@@ -14,6 +14,7 @@ public class EventResponseDto {
     private String content;
     private Integer minParticipants;
     private Integer maxParticipants;
+    private Integer currentParticipants;
     private LocalDateTime startDate;
     private LocalDateTime closeDate;
     private LocalDateTime createdAt;
