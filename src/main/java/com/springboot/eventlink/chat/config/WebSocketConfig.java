@@ -1,6 +1,8 @@
 package com.springboot.eventlink.chat.config;
 
+import com.springboot.eventlink.chat.handler.WebSocketAuthInterceptor;
 import com.springboot.eventlink.chat.handler.WebSocketChatHandler;
+import com.springboot.eventlink.user.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -13,9 +15,10 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig implements WebSocketConfigurer {
 
     private final WebSocketChatHandler webSocketChatHandler;
+    private final JWTUtil jwtUtil;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketChatHandler, "/ws/chat").setAllowedOrigins("*");
+        registry.addHandler(webSocketChatHandler, "/ws/chat").addInterceptors(new WebSocketAuthInterceptor(jwtUtil)).setAllowedOrigins("*");
     }
 }

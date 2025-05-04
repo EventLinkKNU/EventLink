@@ -2,6 +2,10 @@ package com.springboot.eventlink.chat.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.eventlink.chat.dto.ChatMessageDto;
+import com.springboot.eventlink.chat.entity.Chat;
+import com.springboot.eventlink.chat.repository.ChatRepository;
+import com.springboot.eventlink.user.entity.Users;
+import com.springboot.eventlink.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -9,22 +13,18 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatService {
     private final ObjectMapper mapper;
+    private final ChatRepository chatRepository;
+    private final UserRepository userRepository;
+
     private final Map<WebSocketSession, Long> sessionUserMap = new HashMap<>();
-
-    // 현재 연결된 세션들
     private final Set<WebSocketSession> sessions = new HashSet<>();
-
-    // 방 번호 -> 세션 목록
     private final Map<Long, Set<WebSocketSession>> chatRoomSessionMap = new HashMap<>();
 
     public void connect(WebSocketSession session) {
@@ -35,44 +35,56 @@ public class ChatService {
     public void disconnect(WebSocketSession session) {
         log.info("{} 연결 끊김", session.getId());
         sessions.remove(session);
-
         chatRoomSessionMap.forEach((roomId, sessionSet) -> sessionSet.remove(session));
     }
 
-
     public void handleMessage(WebSocketSession session, String payload) throws IOException {
-        ChatMessageDto chatMessageDto = mapper.readValue(payload, ChatMessageDto.class);
-        Long chatRoomId = chatMessageDto.getChatRoomId();
+        ChatMessageDto dto = mapper.readValue(payload, ChatMessageDto.class);
+        Long chatRoomId = dto.getChatId();
 
         chatRoomSessionMap.computeIfAbsent(chatRoomId, k -> new HashSet<>());
         Set<WebSocketSession> chatRoomSession = chatRoomSessionMap.get(chatRoomId);
 
-        if (chatMessageDto.getMessageType().equals(ChatMessageDto.MessageType.ENTER)) {
+        if (dto.getMessageType() == ChatMessageDto.MessageType.ENTER) {
             chatRoomSession.add(session);
-            sessionUserMap.put(session, chatMessageDto.getSenderId());
+            sessionUserMap.put(session, dto.getSendId());
+        }
+
+        if (dto.getMessageType() == ChatMessageDto.MessageType.TALK) {
+            Chat chat = new Chat();
+            chat.setMessage(dto.getMessage());
+            chat.setCreatedAt(new Date());
+
+            Users sender = userRepository.findById(dto.getSendId())
+                    .orElseThrow(() -> new IllegalArgumentException("보낸 사람 없음"));
+            Users receiver = userRepository.findById(dto.getReceiveId())
+                    .orElseThrow(() -> new IllegalArgumentException("받는 사람 없음"));
+
+            chat.setSendID(sender);
+            chat.setReceiveID(receiver);
+
+            chatRepository.save(chat);
         }
 
         if (chatRoomSession.size() >= 3) {
             removeClosedSession(chatRoomSession);
         }
 
-        sendMessageToChatRoom(chatMessageDto, chatRoomSession);
+        sendMessageToChatRoom(dto, chatRoomSession);
     }
 
     private void removeClosedSession(Set<WebSocketSession> chatRoomSession) {
         chatRoomSession.removeIf(sess -> !sessions.contains(sess));
     }
 
-    private void sendMessageToChatRoom(ChatMessageDto chatMessageDto, Set<WebSocketSession> chatRoomSession) {
+    private void sendMessageToChatRoom(ChatMessageDto dto, Set<WebSocketSession> chatRoomSession) {
         chatRoomSession.parallelStream()
                 .filter(sess -> {
-                    Long senderId = sessionUserMap.get(sess);
-                    return senderId == null || !senderId.equals(chatMessageDto.getSenderId());
+                    Long userId = sessionUserMap.get(sess);
+                    return userId != null && userId.equals(dto.getReceiveId());
                 })
-                .forEach(sess -> sendMessage(sess, chatMessageDto));
+                .forEach(sess -> sendMessage(sess, dto));
     }
-
-
 
     public <T> void sendMessage(WebSocketSession session, T message) {
         try {
@@ -82,3 +94,4 @@ public class ChatService {
         }
     }
 }
+
