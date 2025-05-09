@@ -32,7 +32,7 @@ public class EventService {
         this.eventParticipationRepository = eventParticipationRepository;
         this.eventApplicationRepository = eventApplicationRepository;
     }
-    /*이벤트 관련 서비스*/
+    //    이벤트 생성
     @Transactional
     public Long createEvent(String userName, EventCreateDto dto){
         Users creator = userRepository.findByUsername(userName);
@@ -51,27 +51,37 @@ public class EventService {
 
         return eventRepository.save(event).getId();
     }
+
+
     public EventResponseDto getEventById(Long eventId){
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(()-> new IllegalArgumentException("이벤트를 찾을 수 없습니다."));
         return toDto(event);
     }
+
+    //    내 이벤트 조회
     public List<EventResponseDto> getUserEvents(String userName) {
         Users creator = userRepository.findByUsername(userName);
         return eventRepository.findByCreatorId(creator.getId()).stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+
+    //    해당 카테고리의 이벤트 조회
     public List<EventResponseDto> getEventsByCategory(Long categoryId) {
         return eventRepository.findByCategoryId(categoryId).stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+
+    //    모든 이벤트 조회
     public List<EventResponseDto> getAllEvents() {
         return eventRepository.findAll().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+
+    //    이벤트 삭제
     @Transactional
     public void deleteEvent(Long eventId, String userName) {
         Users user = userRepository.findByUsername(userName);
@@ -82,6 +92,8 @@ public class EventService {
         }
         eventRepository.delete(event);
     }
+
+    //    이벤트 전송용 데이터
     private EventResponseDto toDto(Event event) {
         return EventResponseDto.builder()
                 .id(event.getId())
@@ -99,37 +111,5 @@ public class EventService {
                 .build();
     }
 
-    /*이벤트 신청서 서비스*/
-    @Transactional
-    public Long applyToEvent(String userName, EventParticipationDto dto) {
-        Users user = userRepository.findByUsername(userName);
-        Event event = eventRepository.findById(dto.getEventId())
-                .orElseThrow(() -> new IllegalArgumentException("이벤트를 찾을 수 없습니다."));
-
-        // 이미 신청한 경우 예외 처리
-        if (eventApplicationRepository.existsByEventAndMember(event, user)) {
-            throw new IllegalStateException("이미 이 이벤트에 신청한 사용자입니다.");
-        }
-
-        // 참여 정보 저장
-        EventParticipation participation = new EventParticipation();
-        participation.setEvent(event);
-        participation.setMember(user);
-        participation.setContent(dto.getContent());
-        eventParticipationRepository.save(participation);
-
-        // 신청 처리 정보 저장
-        EventApplication application = new EventApplication();
-        application.setEvent(event);
-        application.setMember(user);
-        application.setStatus(ApplicationStatus.PENDING);
-        application.setApplicationDate(LocalDateTime.now());
-        eventApplicationRepository.save(application);
-
-        return participation.getId();
-    }
-
-
-    /*이벤트 신청 처리 서비스*/
 
 }
