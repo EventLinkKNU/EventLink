@@ -93,5 +93,41 @@ public class ChatService {
             log.error("메시지 전송 실패", e);
         }
     }
+
+    public List<Chat> getChatByUserId(Long userId) {
+        return chatRepository.findAllBySendID_IdOrReceiveID_Id(userId, userId);
+    }
+
+    public ChatMessageDto createOrReturnChatRoom(Users sender, Users receiver) {
+        // 1. 두 사용자의 기존 채팅이 존재하는지 확인 (양방향 모두)
+        Optional<Chat> existingChat = chatRepository.findTopBySendIDAndReceiveIDOrReceiveIDAndSendIDOrderByCreatedAtDesc(
+                sender, receiver, sender, receiver
+        );
+
+        ChatMessageDto dto = new ChatMessageDto();
+        dto.setMessageType(ChatMessageDto.MessageType.ENTER);
+        dto.setSendId(sender.getId());
+        dto.setReceiveId(receiver.getId());
+        dto.setCreatedAt(new Date().toString());
+
+        if (existingChat.isPresent()) {
+            dto.setChatId(existingChat.get().getChatId()); // 기존 채팅방 ID
+            dto.setMessage("기존 채팅방으로 입장합니다.");
+        } else {
+            // 2. 새 채팅방을 만든다고 가정 → 채팅 메시지 하나 저장해서 chatId 확보
+            Chat newChat = new Chat();
+            newChat.setSendID(sender);
+            newChat.setReceiveID(receiver);
+            newChat.setMessage("채팅방이 생성되었습니다.");
+            newChat.setCreatedAt(new Date());
+
+            Chat saved = chatRepository.save(newChat);
+            dto.setChatId(saved.getChatId());
+            dto.setMessage("새 채팅방이 생성되었습니다.");
+        }
+
+        return dto;
+    }
+
 }
 
