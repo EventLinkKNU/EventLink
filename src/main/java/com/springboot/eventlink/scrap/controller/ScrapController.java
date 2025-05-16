@@ -7,6 +7,7 @@ import com.springboot.eventlink.user.dto.CustomOAuth2User;
 import com.springboot.eventlink.user.entity.Users;
 import com.springboot.eventlink.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +24,16 @@ public class ScrapController {
 
     @PostMapping
     public ResponseEntity<String> createScrap(@RequestBody ScrapRequestDto dto) {
-        Scrap scrap = scrapService.createScrap(dto);
-        return ResponseEntity.ok("스크랩이 완료되었습니다. ID: " + scrap.getId());
+        try {
+            Scrap scrap = scrapService.createScrap(dto);
+            return ResponseEntity.ok("스크랩이 완료되었습니다. ID: " + scrap.getId());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 스크랩한 이벤트입니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
+
 
     @GetMapping("/myscrap")
     public ResponseEntity<List<ScrapResponseDto>> getMyScrap(@AuthenticationPrincipal CustomOAuth2User user) {
