@@ -29,6 +29,12 @@ public class ScrapService {
         Event event = eventRepository.findById(dto.getEventId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이벤트입니다."));
 
+        // 중복 스크랩 체크
+        boolean exists = scrapRepository.existsByCreatorAndEvent(user, event);
+        if (exists) {
+            throw new IllegalStateException("이미 스크랩된 이벤트입니다.");
+        }
+
         Scrap scrap = new Scrap();
         scrap.setCreator(user);
         scrap.setEvent(event);
