@@ -1,5 +1,6 @@
 package com.springboot.eventlink.event.entity;
 
+import com.springboot.eventlink.scrap.entity.Scrap;
 import com.springboot.eventlink.user.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -66,5 +67,7 @@ public class Event {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<EventParticipation> participations;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Scrap> scraps;
 }
 
