@@ -40,8 +40,8 @@ public class EventController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to create event");
         }
-
     }
+
 
     //   내가 개설한 이벤트 조회
     @GetMapping("/get-my-events")
@@ -56,6 +56,11 @@ public class EventController {
     public ResponseEntity<List<EventResponseDto>> getALlEventList(@AuthenticationPrincipal CustomOAuth2User user){
         List<EventResponseDto> events = eventService.getAllEvents();
         return ResponseEntity.ok(events);
+    }
+    @GetMapping("/get-event")
+    public ResponseEntity<?> getEvent(@RequestParam Long eventId, @AuthenticationPrincipal CustomOAuth2User user){
+        EventResponseDto eventResponseDto = eventService.getEventById(eventId);
+        return ResponseEntity.ok(eventResponseDto);
     }
 
     //    이벤트 삭제 요청
@@ -79,15 +84,14 @@ public class EventController {
     public ResponseEntity<List<EventParticipationDto>> getMyApply(@RequestParam Long eventId, @AuthenticationPrincipal CustomOAuth2User user){
         String userName = user.getUsername();
         List<EventParticipationDto> eventParticipationDtos = eventParticipationService.getParticipationsByEvent(userName, eventId);
-        System.out.println(eventParticipationDtos+ "-------------");
         return ResponseEntity.ok(eventParticipationDtos);
     }
 
     //    (이벤트 개설자)이벤트 신청서 상태 수정
-//    @RequestParam String username -> 이거 그 사용자 테이블에서 보이는 MemberID (ex. google 116978770854110719034) 입력하는거임~~~
     @PatchMapping("/event/apply/update-status")
-    public ResponseEntity<String> updateApplicationStatus(@RequestParam Long eventId, @RequestParam String username, @RequestParam ApplicationStatus status,
+    public ResponseEntity<String> updateApplicationStatus(@RequestParam Long eventId, @RequestParam ApplicationStatus status,
                                                           @AuthenticationPrincipal CustomOAuth2User user) {
+        String username = user.getUsername();
         eventParticipationService.updateApplicationStatus(eventId, username, status);
         return ResponseEntity.ok("신청서 상태가 업데이트되었습니다.");
     }

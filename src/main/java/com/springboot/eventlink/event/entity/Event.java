@@ -27,8 +27,21 @@ public class Event {
     @JoinColumn(name = "CATEGORY_ID", nullable = false)
     private Category category;
 
+    private String country;
+
+    private String city;
+
     private String title;
+
     private String content;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "GENDER_FILTER")
+    private GenderFilter genderFilter;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "STYLE_FILTER")
+    private StyleFilter styleFilter;
 
     @Column(name = "MIN_PARTICIPANTS")
     private Integer minParticipants;

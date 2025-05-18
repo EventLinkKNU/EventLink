@@ -43,6 +43,10 @@ public class EventService {
         event.setCategory(category);
         event.setTitle(dto.getTitle());
         event.setContent(dto.getContent());
+        event.setCountry(dto.getCountry());
+        event.setCity(dto.getCity());
+        event.setGenderFilter(dto.getGenderFilter());
+        event.setStyleFilter(dto.getStyleFilter());
         event.setMinParticipants(dto.getMinParticipants());
         event.setCurrentParticipants(1);
         event.setMaxParticipants(dto.getMaxParticipants());
@@ -99,8 +103,13 @@ public class EventService {
                 .id(event.getId())
                 .title(event.getTitle())
                 .content(event.getContent())
+                .country(event.getCountry())
+                .city(event.getCity())
+                .genderFilter(event.getGenderFilter())
+                .styleFilter(event.getStyleFilter())
                 .minParticipants(event.getMinParticipants())
                 .maxParticipants(event.getMaxParticipants())
+                .currentParticipants(event.getCurrentParticipants())
                 .startDate(event.getStartDate())
                 .closeDate(event.getCloseDate())
                 .createdAt(event.getCreatedAt())
