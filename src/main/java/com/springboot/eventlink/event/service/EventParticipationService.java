@@ -88,7 +88,7 @@ public class EventParticipationService {
                 .build();
     }
 
-    //    이벤트 신청서 상태 변결
+    //    이벤트 신청서 상태 변경
     @Transactional
     public void updateApplicationStatus(Long eventId, String username, ApplicationStatus status) {
         Users user = userRepository.findByUsername(username);
@@ -98,8 +98,11 @@ public class EventParticipationService {
         if (application == null) {
             throw new IllegalArgumentException("신청서를 찾을 수 없습니다.");
         }
-
-        application.setStatus(status);
+        if(status == ApplicationStatus.PENDING) {
+            application.setStatus(status);
+            event.setCurrentParticipants(event.getCurrentParticipants() + 1);
+        }else
+            application.setStatus(status);
         eventApplicationRepository.save(application);
     }
 

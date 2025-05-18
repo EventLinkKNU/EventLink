@@ -6,6 +6,7 @@ import com.springboot.eventlink.scrap.service.ScrapService;
 import com.springboot.eventlink.user.dto.CustomOAuth2User;
 import com.springboot.eventlink.user.entity.Users;
 import com.springboot.eventlink.user.repository.UserRepository;
+import com.springboot.eventlink.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,17 @@ import java.util.List;
 @RequestMapping("/api/scraps")
 @RequiredArgsConstructor
 public class ScrapController {
-
+    private final UserService userService;
     private final ScrapService scrapService;
     private final UserRepository userRepository;
 
     @PostMapping
-    public ResponseEntity<String> createScrap(@RequestBody ScrapRequestDto dto) {
+    public ResponseEntity<String> createScrap(@RequestParam Long eventId, @AuthenticationPrincipal CustomOAuth2User user) {
         try {
+            ScrapRequestDto dto = new ScrapRequestDto();
+            String username = user.getUsername();
+            dto.setEventId(eventId);
+            dto.setCreatorId(userRepository.findByUsername(username).getId());
             Scrap scrap = scrapService.createScrap(dto);
             return ResponseEntity.ok("스크랩이 완료되었습니다. ID: " + scrap.getId());
         } catch (IllegalStateException e) {
