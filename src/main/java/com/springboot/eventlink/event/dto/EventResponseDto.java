@@ -26,6 +26,8 @@ public class EventResponseDto {
     private LocalDateTime createdAt;
     private Long creatorId;
     private String creatorName;
+    private String creatorCountry;
+    private String creatorGender;
 
     private Long categoryId;
     private String categoryName;
