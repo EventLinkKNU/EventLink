@@ -8,6 +8,8 @@ import com.springboot.eventlink.event.entity.EventParticipation;
 import com.springboot.eventlink.event.service.EventParticipationService;
 import com.springboot.eventlink.event.service.EventService;
 import com.springboot.eventlink.user.dto.CustomOAuth2User;
+import com.springboot.eventlink.user.dto.UserDTO;
+import com.springboot.eventlink.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +26,13 @@ import java.util.List;
 public class EventController {
     private final EventService eventService;
     private final EventParticipationService eventParticipationService;
+    private final UserService userService;
+
     @Autowired
-    public EventController(EventService eventService, EventParticipationService eventParticipationService) {
+    public EventController(EventService eventService, EventParticipationService eventParticipationService, UserService userService) {
         this.eventService = eventService;
         this.eventParticipationService = eventParticipationService;
+        this.userService = userService;
     }
 
     //    이벤트 개설 요청
@@ -90,8 +95,7 @@ public class EventController {
     //    (이벤트 개설자)이벤트 신청서 상태 수정
     @PatchMapping("/event/apply/update-status")
     public ResponseEntity<String> updateApplicationStatus(@RequestParam Long eventId, @RequestParam ApplicationStatus status,
-                                                          @AuthenticationPrincipal CustomOAuth2User user) {
-        String username = user.getUsername();
+                                                          @RequestParam String username) {
         eventParticipationService.updateApplicationStatus(eventId, username, status);
         return ResponseEntity.ok("신청서 상태가 업데이트되었습니다.");
     }

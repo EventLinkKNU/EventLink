@@ -91,7 +91,7 @@ public class EventParticipationService {
     //    이벤트 신청서 상태 변경
     @Transactional
     public void updateApplicationStatus(Long eventId, String username, ApplicationStatus status) {
-        Users user = userRepository.findByUsername(username);
+        Users user = userRepository.findByName(username);
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("이벤트가 없습니다."));
         EventApplication application = eventApplicationRepository.findByEventAndMember(event, user);
 

@@ -8,8 +8,11 @@ import com.springboot.eventlink.event.repository.CategoryRepository;
 import com.springboot.eventlink.event.repository.EventApplicationRepository;
 import com.springboot.eventlink.event.repository.EventParticipationRepository;
 import com.springboot.eventlink.event.repository.EventRepository;
+import com.springboot.eventlink.user.dto.UserDTO;
 import com.springboot.eventlink.user.entity.Users;
 import com.springboot.eventlink.user.repository.UserRepository;
+import com.springboot.eventlink.user.service.UserService;
+import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,13 +27,15 @@ public class EventService {
     private final CategoryRepository categoryRepository;
     private final EventParticipationRepository eventParticipationRepository;
     private final EventApplicationRepository eventApplicationRepository;
+    private final UserService userService;
 
-    public EventService(UserRepository userRepository, EventRepository eventRepository, CategoryRepository categoryRepository, EventParticipationRepository eventParticipationRepository, EventApplicationRepository eventApplicationRepository) {
+    public EventService(UserRepository userRepository, EventRepository eventRepository, CategoryRepository categoryRepository, EventParticipationRepository eventParticipationRepository, EventApplicationRepository eventApplicationRepository, UserService userService) {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.categoryRepository = categoryRepository;
         this.eventParticipationRepository = eventParticipationRepository;
         this.eventApplicationRepository = eventApplicationRepository;
+        this.userService = userService;
     }
     //    이벤트 생성
     @Transactional
@@ -85,6 +90,7 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
+
     //    이벤트 삭제
     @Transactional
     public void deleteEvent(Long eventId, String userName) {
@@ -98,7 +104,10 @@ public class EventService {
     }
 
     //    이벤트 전송용 데이터
+
     private EventResponseDto toDto(Event event) {
+        System.out.println("<UNK> <UNK> <UNK>");
+        System.out.println(event.getCreator().getUsername());
         return EventResponseDto.builder()
                 .id(event.getId())
                 .title(event.getTitle())
@@ -115,10 +124,10 @@ public class EventService {
                 .createdAt(event.getCreatedAt())
                 .creatorId(event.getCreator().getId())
                 .creatorName(event.getCreator().getName())
+                .creatorCountry(event.getCreator().getCountry())
+                .creatorGender(event.getCreator().getGender())
                 .categoryId(event.getCategory().getId())
                 .categoryName(event.getCategory().getName())
                 .build();
     }
-
-
 }
