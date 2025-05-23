@@ -25,7 +25,8 @@ public class EventResponseDto {
     private LocalDateTime closeDate;
     private LocalDateTime createdAt;
     private Long creatorId;
-    private String creatorName;
+    private String creatorUsername; // 이름 말고, Google 23812~~ 같은거.
+    private String creatorName; // 이름
     private String creatorCountry;
     private String creatorGender;
 

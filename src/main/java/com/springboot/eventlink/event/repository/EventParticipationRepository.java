@@ -12,4 +12,5 @@ import java.util.List;
 public interface EventParticipationRepository extends JpaRepository<EventParticipation, Long> {
     List<EventParticipation> findByEventId(Long eventId);
     List<EventParticipation> findAllByEvent(Event event);
+    List<EventParticipation> findAllByMember(Users user);
 }

@@ -65,7 +65,7 @@ public class EventParticipationService {
 
 
     //    내 이벤트별 신청서 조회
-    public List<EventParticipationDto> getParticipationsByEvent(String username, Long eventId) {
+    public List<EventParticipationDto> getParticipationsForMyEvent(String username, Long eventId) {
         Users user = userRepository.findByUsername(username);
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 없습니다."));
         if (!user.getId().equals(event.getCreator().getId())) {
@@ -77,6 +77,14 @@ public class EventParticipationService {
                 .collect(Collectors.toList());
     }
 
+    //  내가 신청한 이벤트 조회
+    public List<EventParticipationDto> getParticipations(String username) {
+        Users user = userRepository.findByUsername(username);
+        return eventParticipationRepository.findAllByMember(user).stream()
+                .map(this::toParticipationDto)
+                .collect(Collectors.toList());
+    }
+
     private EventParticipationDto toParticipationDto(EventParticipation eventParticipation) {
         EventApplication application = eventApplicationRepository.findByEventAndMember(eventParticipation.getEvent(),eventParticipation.getMember());
 
@@ -84,6 +92,7 @@ public class EventParticipationService {
                 .eventId(eventParticipation.getEvent().getId())
                 .username(eventParticipation.getMember().getName())
                 .content(eventParticipation.getContent())
+                .dateTime(eventParticipation.getEvent().getStartDate())
                 .applicationStatus(application != null ? application.getStatus() : null)
                 .build();
     }
@@ -98,7 +107,7 @@ public class EventParticipationService {
         if (application == null) {
             throw new IllegalArgumentException("신청서를 찾을 수 없습니다.");
         }
-        if(status == ApplicationStatus.PENDING) {
+        if(status == ApplicationStatus.APPROVED) {
             application.setStatus(status);
             event.setCurrentParticipants(event.getCurrentParticipants() + 1);
         }else
