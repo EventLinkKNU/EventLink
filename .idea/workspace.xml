@@ -6,12 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="f946d46e-b067-456f-9892-1ae512d2077f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/event/controller/EventController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/event/controller/EventController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/event/dto/EventResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/event/dto/EventResponseDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/event/service/EventParticipationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/event/service/EventParticipationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/event/service/EventService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/event/service/EventService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/user/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/user/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/scrap/controller/ScrapController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/scrap/controller/ScrapController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/scrap/repository/ScrapRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/scrap/repository/ScrapRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/scrap/service/ScrapService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/scrap/service/ScrapService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +94,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.EventLinkApplication.executor": "Run",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "scrapstate",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/sunwookim/EventLink/back0518/src/main/java/com/springboot/eventlink",
     "node.js.detected.package.eslint": "true",
@@ -223,6 +222,7 @@
       <workItem from="1746785528758" duration="722000" />
       <workItem from="1747572118166" duration="2859000" />
       <workItem from="1747823325700" duration="118000" />
+      <workItem from="1747975293980" duration="2425000" />
     </task>
     <servers />
   </component>

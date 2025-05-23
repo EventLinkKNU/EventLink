@@ -82,5 +82,30 @@ public class ScrapService {
     }
 
 
+    public boolean isScrapped(Long userId, Long eventId) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이벤트입니다."));
+
+        return scrapRepository.existsByCreatorAndEvent(user, event);
+    }
+
+    @Transactional
+    public void deleteScrapByUserAndEvent(Long userId, Long eventId) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이벤트입니다."));
+
+        Scrap scrap = scrapRepository.findByCreatorAndEvent(user, event)
+                .orElseThrow(() -> new IllegalArgumentException("스크랩을 찾을 수 없습니다."));
+
+        scrapRepository.delete(scrap);
+    }
+
+
+
+
 
 }
