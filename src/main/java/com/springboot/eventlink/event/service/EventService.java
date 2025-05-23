@@ -106,7 +106,6 @@ public class EventService {
     //    이벤트 전송용 데이터
 
     private EventResponseDto toDto(Event event) {
-        System.out.println("<UNK> <UNK> <UNK>");
         System.out.println(event.getCreator().getUsername());
         return EventResponseDto.builder()
                 .id(event.getId())
@@ -123,6 +122,7 @@ public class EventService {
                 .closeDate(event.getCloseDate())
                 .createdAt(event.getCreatedAt())
                 .creatorId(event.getCreator().getId())
+                .creatorUsername(event.getCreator().getUsername())
                 .creatorName(event.getCreator().getName())
                 .creatorCountry(event.getCreator().getCountry())
                 .creatorGender(event.getCreator().getGender())

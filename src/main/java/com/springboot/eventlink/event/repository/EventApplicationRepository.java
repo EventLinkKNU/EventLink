@@ -14,5 +14,6 @@ public interface EventApplicationRepository extends JpaRepository<EventApplicati
         void deleteAllByEvent(Event event);
         List<EventApplication> findByEvent(Event event);
         EventApplication findByEventAndMember(Event event, Users member);
+        List<EventApplication> findAllByMember(Users member);
 
 }

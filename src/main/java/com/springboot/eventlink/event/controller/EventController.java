@@ -77,7 +77,7 @@ public class EventController {
     }
 
     //    이벤트 신청 요청
-    @PostMapping("/events/apply")
+    @PostMapping("/apply")
     public ResponseEntity<Long> applyToEvent(@RequestBody EventParticipationDto dto,
                                              @AuthenticationPrincipal CustomOAuth2User userDetails) {
         Long participationId = eventParticipationService.applyToEvent(userDetails.getUsername(), dto);
@@ -85,18 +85,33 @@ public class EventController {
     }
 
     //    (이벤트 개설자)내 이벤트 참여 신청서 보기
-    @GetMapping("/event/apply/get-my-apply")
+//    @GetMapping("/event/apply/get-my-apply")
+    @GetMapping("/applications/event")
     public ResponseEntity<List<EventParticipationDto>> getMyApply(@RequestParam Long eventId, @AuthenticationPrincipal CustomOAuth2User user){
         String userName = user.getUsername();
-        List<EventParticipationDto> eventParticipationDtos = eventParticipationService.getParticipationsByEvent(userName, eventId);
+        List<EventParticipationDto> eventParticipationDtos = eventParticipationService.getParticipationsForMyEvent(userName, eventId);
         return ResponseEntity.ok(eventParticipationDtos);
     }
 
     //    (이벤트 개설자)이벤트 신청서 상태 수정
-    @PatchMapping("/event/apply/update-status")
+//    @PatchMapping("/event/apply/update-status")
+    @PatchMapping("/applications/event/update-status")
     public ResponseEntity<String> updateApplicationStatus(@RequestParam Long eventId, @RequestParam ApplicationStatus status,
                                                           @RequestParam String username) {
         eventParticipationService.updateApplicationStatus(eventId, username, status);
         return ResponseEntity.ok("신청서 상태가 업데이트되었습니다.");
+    }
+    //현재 로그인한 user정보 가져오기.
+    @GetMapping("/get-current-user")
+    public ResponseEntity<UserDTO> getCurrentUser(@AuthenticationPrincipal CustomOAuth2User user){
+        UserDTO userInfo = userService.getUserInfo(user.getUsername());
+        return ResponseEntity.ok(userInfo);
+    }
+    //  내가 참여한 신청서 보기
+    @GetMapping("/applications/me")
+    public ResponseEntity<List<EventParticipationDto>> getApply(@AuthenticationPrincipal CustomOAuth2User user){
+        String userName = user.getUsername();
+        List<EventParticipationDto> eventParticipationDtos = eventParticipationService.getParticipations(userName);
+        return ResponseEntity.ok(eventParticipationDtos);
     }
 }
