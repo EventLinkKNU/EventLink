@@ -24,21 +24,36 @@ public class ScrapController {
     private final UserRepository userRepository;
 
     @PostMapping
-    public ResponseEntity<String> createScrap(@RequestParam Long eventId, @AuthenticationPrincipal CustomOAuth2User user) {
+    public ResponseEntity<String> toggleScrap(@RequestParam Long eventId, @AuthenticationPrincipal CustomOAuth2User user) {
+        String username = user.getUsername();
+        Long userId = userRepository.findByUsername(username).getId();
+
         try {
-            ScrapRequestDto dto = new ScrapRequestDto();
-            String username = user.getUsername();
-            dto.setEventId(eventId);
-            dto.setCreatorId(userRepository.findByUsername(username).getId());
-            Scrap scrap = scrapService.createScrap(dto);
-            return ResponseEntity.ok("스크랩이 완료되었습니다. ID: " + scrap.getId());
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 스크랩한 이벤트입니다.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            boolean isScrapped = scrapService.isScrapped(userId, eventId);
+
+            if (isScrapped) {
+                scrapService.deleteScrapByUserAndEvent(userId, eventId);
+                return ResponseEntity.ok("스크랩이 취소되었습니다.");
+            } else {
+                ScrapRequestDto dto = new ScrapRequestDto();
+                dto.setEventId(eventId);
+                dto.setCreatorId(userId);
+                Scrap scrap = scrapService.createScrap(dto);
+                return ResponseEntity.ok("스크랩이 완료되었습니다. ID: " + scrap.getId());
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("스크랩 처리 중 오류 발생");
         }
     }
 
+    @GetMapping("/is-scrapped")
+    public ResponseEntity<Boolean> isScrapped(@RequestParam Long eventId, @AuthenticationPrincipal CustomOAuth2User user) {
+        String username = user.getUsername();
+        Long userId = userRepository.findByUsername(username).getId();
+        boolean result = scrapService.isScrapped(userId, eventId);
+        return ResponseEntity.ok(result);
+    }
 
     @GetMapping("/myscrap")
     public ResponseEntity<List<ScrapResponseDto>> getMyScrap(@AuthenticationPrincipal CustomOAuth2User user) {
