@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="IU-251.23774.435">
-    <data-source name="eventlink@localhost" uuid="42fa760e-018e-499e-b867-fb9d3287b26b">
-      <database-info product="MySQL" version="9.3.0" jdbc-version="4.2" driver-name="MySQL Connector/J" driver-version="mysql-connector-j-8.2.0 (Revision: 06a1f724497fd81c6a659131fda822c9e5085b6c)" dbms="MYSQL" exact-version="9.3.0" exact-driver-version="8.2">
+  <component name="dataSourceStorageLocal" created-in="IU-243.22562.218">
+    <data-source name="event@localhost" uuid="f1913f8e-d9ac-4620-bb7c-607923bfbe58">
+      <database-info product="MariaDB" version="11.7.2-MariaDB" jdbc-version="4.2" driver-name="MariaDB Connector/J" driver-version="3.3.3" dbms="MARIADB" exact-version="11.7.2" exact-driver-version="3.3">
         <extra-name-characters>#@</extra-name-characters>
         <identifier-quote-string>`</identifier-quote-string>
       </database-info>
@@ -14,7 +14,6 @@
           <node kind="schema" qname="@" />
         </introspection-scope>
       </schema-mapping>
-      <load-sources>user_and_system_sources</load-sources>
     </data-source>
   </component>
 </project>

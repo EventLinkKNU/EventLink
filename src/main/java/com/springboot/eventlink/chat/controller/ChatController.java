@@ -2,6 +2,7 @@ package com.springboot.eventlink.chat.controller;
 
 import com.springboot.eventlink.chat.dto.ChatMessageDto;
 import com.springboot.eventlink.chat.entity.Chat;
+import com.springboot.eventlink.chat.repository.ChatRepository;
 import com.springboot.eventlink.chat.service.ChatService;
 import com.springboot.eventlink.user.entity.Users;
 import com.springboot.eventlink.user.repository.UserRepository;
@@ -18,6 +19,7 @@ public class ChatController {
 
     private final ChatService chatService;
     private final UserRepository userRepository;
+    private final ChatRepository chatRepository;
 
     //사용자가 참여 중인 채팅방 리스트 보기
     @PostMapping("/{userId}")
@@ -34,6 +36,13 @@ public class ChatController {
         Users receiver = userRepository.findById(request.getReceiveId()).orElseThrow(() -> new IllegalArgumentException("받는 사용자 없음"));
 
         ChatMessageDto result = chatService.createOrReturnChatRoom(sender, receiver);
+        result.setReceiveId(receiver.getId());
         return ResponseEntity.ok(result);
     }
+    @GetMapping("/room/{roomId}")
+    public ResponseEntity<List<Chat>> getChatMessages(@PathVariable("roomId") Long roomId) {
+        List<Chat> messages = chatRepository.findAllByRoomIdOrderByCreatedAtAsc(roomId);
+        return ResponseEntity.ok(messages);
+    }
+
 }

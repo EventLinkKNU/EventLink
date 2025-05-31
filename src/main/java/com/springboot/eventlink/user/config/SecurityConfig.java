@@ -92,7 +92,7 @@ public class SecurityConfig {
 //                );
 
         http
-            .oauth2Login(oauth2 -> oauth2
+                .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authorization ->
                                 authorization.authorizationRequestResolver(customAuthorizationRequestResolver())
                         )
@@ -108,11 +108,12 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                                .requestMatchers("/oauth2/**", "/logout","/ws/chat").permitAll() // OAuth2 인증 경로는 모두 허용
-                                .anyRequest().authenticated()); // 그 외에는 인증 필요
-                       // .requestMatchers("/").permitAll()
-                       // .requestMatchers("my").hasRole("USER")
-                       // .anyRequest().authenticated());
+                        .requestMatchers("/oauth2/**", "/logout","/ws/**").permitAll() // OAuth2 인증 경로는 모두 허용
+                        .requestMatchers("/api/v1/chats/room/**").permitAll()
+                        .anyRequest().authenticated()); // 그 외에는 인증 필요
+        // .requestMatchers("/").permitAll()
+        // .requestMatchers("my").hasRole("USER")
+        // .anyRequest().authenticated());
 
         // 로그아웃 설정
         http

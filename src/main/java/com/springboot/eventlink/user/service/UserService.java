@@ -27,6 +27,7 @@ public class UserService {
         Users user = userRepository.findByUsername(username);
 
         UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
