@@ -12,6 +12,10 @@ import java.util.Date;
 @Setter
 @Table(name = "CHAT")
 public class Chat {
+    @Column(name = "ROOM_ID")
+    private Long roomId;
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CHAT_ID")

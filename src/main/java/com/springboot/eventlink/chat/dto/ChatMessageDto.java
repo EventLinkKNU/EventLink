@@ -13,8 +13,9 @@ public class ChatMessageDto {
         ENTER, TALK;
     }
 
+    private Long roomId;
     private MessageType messageType; // 메시지 타입
-    private Long chatId;  // 방 번호
+    private Long chatId;
     private Long sendId;  // 채팅을 보낸 사람
     private Long receiveId; //채팅을 받는 사람
     private String message; // 메시지

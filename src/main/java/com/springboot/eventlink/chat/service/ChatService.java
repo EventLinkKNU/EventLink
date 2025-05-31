@@ -40,7 +40,7 @@ public class ChatService {
 
     public void handleMessage(WebSocketSession session, String payload) throws IOException {
         ChatMessageDto dto = mapper.readValue(payload, ChatMessageDto.class);
-        Long chatRoomId = dto.getChatId();
+        Long chatRoomId = dto.getRoomId(); // ✅ 이제 roomId 사용
 
         chatRoomSessionMap.computeIfAbsent(chatRoomId, k -> new HashSet<>());
         Set<WebSocketSession> chatRoomSession = chatRoomSessionMap.get(chatRoomId);
@@ -62,6 +62,7 @@ public class ChatService {
 
             chat.setSendID(sender);
             chat.setReceiveID(receiver);
+            chat.setRoomId(chatRoomId); // ✅ roomId 저장
 
             chatRepository.save(chat);
         }
@@ -99,30 +100,47 @@ public class ChatService {
     }
 
     public ChatMessageDto createOrReturnChatRoom(Users sender, Users receiver) {
-        // 1. 두 사용자의 기존 채팅이 존재하는지 확인 (양방향 모두)
+        // 1️⃣ 기존 채팅방 (roomId) 조회
         Optional<Chat> existingChat = chatRepository.findTopBySendIDAndReceiveIDOrReceiveIDAndSendIDOrderByCreatedAtDesc(
-                sender, receiver, sender, receiver
+                sender, receiver, receiver, sender
         );
 
+        Long roomId;
+        if (existingChat.isPresent()) {
+            roomId = existingChat.get().getRoomId(); // ✅ 기존 roomId 사용
+        } else {
+            // 2️⃣ 새 roomId 생성 (max + 1)
+            Long maxRoomId = chatRepository.findAll().stream()
+                    .map(Chat::getRoomId)
+                    .filter(Objects::nonNull)
+                    .max(Long::compare)
+                    .orElse(0L);
+
+            roomId = maxRoomId + 1;
+        }
+
+        // 3️⃣ DTO 생성
         ChatMessageDto dto = new ChatMessageDto();
         dto.setMessageType(ChatMessageDto.MessageType.ENTER);
         dto.setSendId(sender.getId());
         dto.setReceiveId(receiver.getId());
         dto.setCreatedAt(new Date().toString());
+        dto.setRoomId(roomId); // ✅ roomId 추가
 
         if (existingChat.isPresent()) {
-            dto.setChatId(existingChat.get().getChatId()); // 기존 채팅방 ID
+            dto.setChatId(existingChat.get().getChatId());
             dto.setMessage("기존 채팅방으로 입장합니다.");
         } else {
-            // 2. 새 채팅방을 만든다고 가정 → 채팅 메시지 하나 저장해서 chatId 확보
+            // 4️⃣ 새 Chat 저장 (더미 메시지)
             Chat newChat = new Chat();
             newChat.setSendID(sender);
             newChat.setReceiveID(receiver);
+            newChat.setRoomId(roomId); // ✅ roomId 저장
             newChat.setMessage("채팅방이 생성되었습니다.");
             newChat.setCreatedAt(new Date());
 
-            Chat saved = chatRepository.save(newChat);
-            dto.setChatId(saved.getChatId());
+            Chat savedChat = chatRepository.save(newChat);
+            dto.setChatId(savedChat.getChatId());
             dto.setMessage("새 채팅방이 생성되었습니다.");
         }
 
@@ -130,4 +148,3 @@ public class ChatService {
     }
 
 }
-
