@@ -1,6 +1,7 @@
 package com.springboot.eventlink.event.controller;
 
 import com.springboot.eventlink.event.dto.EventCreateDto;
+import com.springboot.eventlink.event.dto.EventFilterDto;
 import com.springboot.eventlink.event.dto.EventParticipationDto;
 import com.springboot.eventlink.event.dto.EventResponseDto;
 import com.springboot.eventlink.event.entity.ApplicationStatus;
@@ -62,6 +63,8 @@ public class EventController {
         List<EventResponseDto> events = eventService.getAllEvents();
         return ResponseEntity.ok(events);
     }
+
+    //  이벤트Id로 이벤트 불러오기
     @GetMapping("/get-event")
     public ResponseEntity<?> getEvent(@RequestParam Long eventId, @AuthenticationPrincipal CustomOAuth2User user){
         EventResponseDto eventResponseDto = eventService.getEventById(eventId);
@@ -84,8 +87,7 @@ public class EventController {
         return ResponseEntity.ok(participationId);
     }
 
-    //    (이벤트 개설자)내 이벤트 참여 신청서 보기
-//    @GetMapping("/event/apply/get-my-apply")
+    //    (이벤트 개설자)내가 개설한 이벤트에 대한 참여 신청서 리스트 보기
     @GetMapping("/applications/event")
     public ResponseEntity<List<EventParticipationDto>> getMyApply(@RequestParam Long eventId, @AuthenticationPrincipal CustomOAuth2User user){
         String userName = user.getUsername();
@@ -113,5 +115,12 @@ public class EventController {
         String userName = user.getUsername();
         List<EventParticipationDto> eventParticipationDtos = eventParticipationService.getParticipations(userName);
         return ResponseEntity.ok(eventParticipationDtos);
+    }
+    @GetMapping("/filter")
+    public ResponseEntity<List<EventResponseDto>> getFilteredEvents(
+            @ModelAttribute EventFilterDto filterDto
+    ) {
+        List<EventResponseDto> filteredEvents = eventService.getFilteredEvents(filterDto);
+        return ResponseEntity.ok(filteredEvents);
     }
 }

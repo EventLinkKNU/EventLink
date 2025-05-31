@@ -69,7 +69,7 @@ public class EventParticipationService {
         Users user = userRepository.findByUsername(username);
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("해당 이벤트가 없습니다."));
         if (!user.getId().equals(event.getCreator().getId())) {
-            throw new IllegalStateException("이벤트 작성자가 아닙니다.");
+            return null;
         }
 
         return eventParticipationRepository.findAllByEvent(event).stream()
