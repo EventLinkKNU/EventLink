@@ -1,6 +1,7 @@
 package com.springboot.eventlink.event.service;
 
 import com.springboot.eventlink.event.dto.EventCreateDto;
+import com.springboot.eventlink.event.dto.EventFilterDto;
 import com.springboot.eventlink.event.dto.EventParticipationDto;
 import com.springboot.eventlink.event.dto.EventResponseDto;
 import com.springboot.eventlink.event.entity.*;
@@ -8,11 +9,13 @@ import com.springboot.eventlink.event.repository.CategoryRepository;
 import com.springboot.eventlink.event.repository.EventApplicationRepository;
 import com.springboot.eventlink.event.repository.EventParticipationRepository;
 import com.springboot.eventlink.event.repository.EventRepository;
+import com.springboot.eventlink.event.specification.EventSpecification;
 import com.springboot.eventlink.user.dto.UserDTO;
 import com.springboot.eventlink.user.entity.Users;
 import com.springboot.eventlink.user.repository.UserRepository;
 import com.springboot.eventlink.user.service.UserService;
 import org.apache.catalina.User;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,6 +92,14 @@ public class EventService {
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+    public List<EventResponseDto> getFilteredEvents(EventFilterDto eventFilterDto) {
+        Specification<Event> spec = EventSpecification.filter(eventFilterDto);
+        List<Event> filteredEvents = eventRepository.findAll(spec);
+
+        return filteredEvents.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
 
 
     //    이벤트 삭제
@@ -104,7 +115,6 @@ public class EventService {
     }
 
     //    이벤트 전송용 데이터
-
     private EventResponseDto toDto(Event event) {
         System.out.println(event.getCreator().getUsername());
         return EventResponseDto.builder()

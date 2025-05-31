@@ -2,11 +2,12 @@ package com.springboot.eventlink.event.repository;
 
 import com.springboot.eventlink.event.entity.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 @Repository
-public interface EventRepository extends JpaRepository<Event,Long> {
+public interface EventRepository extends JpaRepository<Event,Long>, JpaSpecificationExecutor<Event> {
     List<Event> findByCreatorId(Long userId);
     List<Event> findByCategoryId(Long categoryId);
 
