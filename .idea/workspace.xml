@@ -5,19 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f946d46e-b067-456f-9892-1ae512d2077f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/chat/controller/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/chat/controller/ChatController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/chat/dto/ChatMessageDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/chat/dto/ChatMessageDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/chat/entity/Chat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/chat/entity/Chat.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/chat/repository/ChatRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/chat/repository/ChatRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/chat/service/ChatService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/chat/service/ChatService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/user/config/CorsMvcConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/user/config/CorsMvcConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/user/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/user/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/user/dto/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/user/dto/UserDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/user/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/user/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

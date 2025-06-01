@@ -45,7 +45,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         response.addCookie(createCookie("Authorization", token));
         String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8.toString());
-        response.sendRedirect("http://localhost:3000/welcome?user_nm=" + encodedName);
+        String encodedToken = URLEncoder.encode(token, StandardCharsets.UTF_8.toString());
+        response.sendRedirect("http://localhost:3000/welcome?user_nm=" + encodedName + "&token=" + encodedToken);
+
+//        response.sendRedirect("http://localhost:3000/welcome?user_nm=" + encodedName);
         //response.sendRedirect("http://localhost:3000/");
         //response.sendRedirect("http://localhost:8080/test");
     }
