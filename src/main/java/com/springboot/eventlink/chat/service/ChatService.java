@@ -6,6 +6,7 @@ import com.springboot.eventlink.chat.entity.Chat;
 import com.springboot.eventlink.chat.repository.ChatRepository;
 import com.springboot.eventlink.user.entity.Users;
 import com.springboot.eventlink.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -99,17 +100,81 @@ public class ChatService {
         return chatRepository.findAllBySendID_IdOrReceiveID_Id(userId, userId);
     }
 
+    //    public ChatMessageDto createOrReturnChatRoom(Users sender, Users receiver) {
+//        // 1️⃣ 기존 채팅방 (roomId) 조회
+//        Optional<Chat> existingChat = chatRepository.findTopBySendIDAndReceiveIDOrReceiveIDAndSendIDOrderByCreatedAtDesc(
+//                sender, receiver, receiver, sender
+//        );
+//
+//        Long roomId;
+//        if (existingChat.isPresent()) {
+//            roomId = existingChat.get().getRoomId(); // ✅ 기존 roomId 사용
+//        } else {
+//            // 2️⃣ 새 roomId 생성 (max + 1)
+//            Long maxRoomId = chatRepository.findAll().stream()
+//                    .map(Chat::getRoomId)
+//                    .filter(Objects::nonNull)
+//                    .max(Long::compare)
+//                    .orElse(0L);
+//
+//            roomId = maxRoomId + 1;
+//        }
+//
+//        // 3️⃣ DTO 생성
+//        ChatMessageDto dto = new ChatMessageDto();
+//        dto.setMessageType(ChatMessageDto.MessageType.ENTER);
+//        dto.setSendId(sender.getId());
+//        dto.setReceiveId(receiver.getId());
+//        dto.setCreatedAt(new Date().toString());
+//        dto.setRoomId(roomId); // ✅ roomId 추가
+//
+//        if (existingChat.isPresent()) {
+//            dto.setChatId(existingChat.get().getChatId());
+//            dto.setRoomId(roomId);
+//            dto.setMessage("기존 채팅방으로 입장합니다.");
+//        } else {
+//            // 4️⃣ 새 Chat 저장 (더미 메시지)
+//            Chat newChat = new Chat();
+//            newChat.setSendID(sender);
+//            newChat.setReceiveID(receiver);
+//            newChat.setRoomId(roomId); // ✅ roomId 저장
+//            newChat.setMessage("채팅방이 생성되었습니다.");
+//            newChat.setCreatedAt(new Date());
+//
+//            Chat savedChat = chatRepository.save(newChat);
+//            dto.setChatId(savedChat.getChatId());
+//            dto.setRoomId(roomId);
+//            dto.setMessage("새 채팅방이 생성되었습니다.");
+//        }
+//
+//        return dto;
+//    }
     public ChatMessageDto createOrReturnChatRoom(Users sender, Users receiver) {
-        // 1️⃣ 기존 채팅방 (roomId) 조회
-        Optional<Chat> existingChat = chatRepository.findTopBySendIDAndReceiveIDOrReceiveIDAndSendIDOrderByCreatedAtDesc(
-                sender, receiver, receiver, sender
-        );
+        // 항상 sender < receiver 순서로 정렬 → 관계 일관성
+        Long senderId = sender.getId();
+        Long receiverId = receiver.getId();
+
+        if (senderId > receiverId) {
+            Long temp = senderId;
+            senderId = receiverId;
+            receiverId = temp;
+        }
+
+        // 기존 roomId 찾기
+        Optional<Chat> existingChat = chatRepository
+                .findTopBySendIDAndReceiveIDOrReceiveIDAndSendIDOrderByCreatedAtDesc(
+                        sender,
+                        receiver,
+                        receiver,
+                        sender
+                );
+
 
         Long roomId;
-        if (existingChat.isPresent()) {
-            roomId = existingChat.get().getRoomId(); // ✅ 기존 roomId 사용
+        if (existingChat.isPresent() && existingChat.get().getRoomId() != null) {
+            roomId = existingChat.get().getRoomId();
         } else {
-            // 2️⃣ 새 roomId 생성 (max + 1)
+            // 새 roomId 생성
             Long maxRoomId = chatRepository.findAll().stream()
                     .map(Chat::getRoomId)
                     .filter(Objects::nonNull)
@@ -119,23 +184,30 @@ public class ChatService {
             roomId = maxRoomId + 1;
         }
 
-        // 3️⃣ DTO 생성
+        // DTO 생성
         ChatMessageDto dto = new ChatMessageDto();
         dto.setMessageType(ChatMessageDto.MessageType.ENTER);
         dto.setSendId(sender.getId());
         dto.setReceiveId(receiver.getId());
         dto.setCreatedAt(new Date().toString());
-        dto.setRoomId(roomId); // ✅ roomId 추가
+        dto.setRoomId(roomId);
 
         if (existingChat.isPresent()) {
             dto.setChatId(existingChat.get().getChatId());
             dto.setMessage("기존 채팅방으로 입장합니다.");
+
+            // 기존 chat row 에 roomId 가 없으면 업데이트 (migration 처리)
+            if (existingChat.get().getRoomId() == null) {
+                Chat existing = existingChat.get();
+                existing.setRoomId(roomId);
+                chatRepository.save(existing);
+            }
         } else {
-            // 4️⃣ 새 Chat 저장 (더미 메시지)
+            // 새 Chat 저장 (dummy message)
             Chat newChat = new Chat();
             newChat.setSendID(sender);
             newChat.setReceiveID(receiver);
-            newChat.setRoomId(roomId); // ✅ roomId 저장
+            newChat.setRoomId(roomId);
             newChat.setMessage("채팅방이 생성되었습니다.");
             newChat.setCreatedAt(new Date());
 
@@ -145,6 +217,52 @@ public class ChatService {
         }
 
         return dto;
+    }
+
+    public List<Chat> getChatByRoomId(Long roomId) {
+        return chatRepository.findAllByRoomIdOrderByCreatedAtAsc(roomId);
+    }
+    // ChatService 에 임시로 추가해서 한번 실행
+
+    @Transactional
+    public void migrateRoomIds() {
+        List<Chat> chats = chatRepository.findAll();
+
+        Map<String, Long> userPairToRoomId = new HashMap<>();
+        long nextRoomId = chatRepository.findAll().stream()
+                .map(Chat::getRoomId)
+                .filter(Objects::nonNull)
+                .max(Long::compare)
+                .orElse(0L) + 1;
+
+        for (Chat chat : chats) {
+            Long senderId = chat.getSendID().getId();
+            Long receiverId = chat.getReceiveID().getId();
+
+            // sender < receiver 정렬
+            if (senderId > receiverId) {
+                Long temp = senderId;
+                senderId = receiverId;
+                receiverId = temp;
+            }
+
+            String key = senderId + "-" + receiverId;
+
+            if (chat.getRoomId() == null) {
+                // roomId 없으면 새로 지정
+                if (!userPairToRoomId.containsKey(key)) {
+                    userPairToRoomId.put(key, nextRoomId++);
+                }
+
+                chat.setRoomId(userPairToRoomId.get(key));
+                chatRepository.save(chat);
+            } else {
+                // 기존 roomId 있으면 그대로 기록
+                userPairToRoomId.putIfAbsent(key, chat.getRoomId());
+            }
+        }
+
+        log.info("RoomId migration 완료!");
     }
 
 }
