@@ -2,7 +2,8 @@ package com.springboot.eventlink.chat.dto;
 
 import lombok.*;
 
-@Builder
+//@Builder
+@Data
 @Getter
 @Setter
 @AllArgsConstructor

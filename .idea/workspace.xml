@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f946d46e-b067-456f-9892-1ae512d2077f" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/springboot/eventlink/chat/config/WebMvcRedirctConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -91,7 +92,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.EventLinkApplication.executor": "Run",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "feat/newchat",
+    "git-widget-placeholder": "feat/chatchat",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/sunwookim/EventLink/back0518/src/main/java/com/springboot/eventlink",
     "node.js.detected.package.eslint": "true",
