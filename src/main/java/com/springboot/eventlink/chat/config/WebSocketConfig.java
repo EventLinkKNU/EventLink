@@ -19,6 +19,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketChatHandler, "/ws/chat").addInterceptors(new WebSocketAuthInterceptor(jwtUtil)).setAllowedOrigins("*");
+//        registry.addHandler(webSocketChatHandler, "/ws/chat").addInterceptors(new WebSocketAuthInterceptor(jwtUtil)).setAllowedOrigins("*");
+        registry.addHandler(webSocketChatHandler, "/ws/chat")
+                .addInterceptors(new WebSocketAuthInterceptor(jwtUtil))
+                .setAllowedOriginPatterns("http://localhost:3000");
+
     }
 }

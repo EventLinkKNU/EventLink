@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
@@ -110,7 +111,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/oauth2/**", "/logout","/ws/**").permitAll() // OAuth2 인증 경로는 모두 허용
+                        .requestMatchers("/oauth2/**", "/logout", "/ws/chat","/ws/**").permitAll() // OAuth2 인증 경로는 모두 허용
                         .requestMatchers("/api/v1/chats/room/**").permitAll()
                         .anyRequest().authenticated()); // 그 외에는 인증 필요
         // .requestMatchers("/").permitAll()
@@ -169,5 +170,9 @@ public class SecurityConfig {
         };
     }
 
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/ws/chat", "/ws/chat/**");
+    }
 
 }
